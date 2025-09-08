@@ -1,0 +1,163 @@
+:root {
+  --bg: #0b1020;
+  --primary: #00e0ff;
+  --accent: #ff3b7f;
+  --success: #20e3b2;
+  --danger: #ff6b6b;
+  --text: #e8eeff;
+  --muted: #a5b1ff;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: radial-gradient(circle, #111948, #0b1020);
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.app {
+  width: min(1150px, 100%);
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 980px) {
+  .app { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  padding: 18px;
+}
+
+h1 { margin: 0; font-size: 26px; }
+.badge {
+  font-size: 12px; padding: 4px 8px; border-radius: 8px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  color: #000; font-weight: bold;
+}
+
+.balance { font-size: 20px; font-weight: bold; }
+.balance span { color: var(--success); }
+
+.wheel-wrap { text-align: center; margin: 20px 0; position: relative; }
+.wheel {
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  border: 8px solid #0b0f29;
+  position: relative;
+  overflow: hidden;
+  margin: auto;
+  box-shadow: 0 0 25px var(--primary);
+}
+.disk {
+  width: 100%; height: 100%; border-radius: 50%;
+  background: conic-gradient(
+    green 0deg 10deg,
+    red 10deg 20deg,
+    black 20deg 30deg,
+    red 30deg 40deg,
+    black 40deg 50deg,
+    red 50deg 60deg,
+    black 60deg 70deg,
+    red 70deg 80deg,
+    black 80deg 90deg,
+    red 90deg 100deg,
+    black 100deg 110deg,
+    red 110deg 120deg,
+    black 120deg 130deg,
+    red 130deg 140deg,
+    black 140deg 150deg,
+    red 150deg 160deg,
+    black 160deg 170deg,
+    red 170deg 180deg,
+    black 180deg 190deg,
+    red 190deg 200deg,
+    black 200deg 210deg,
+    red 210deg 220deg,
+    black 220deg 230deg,
+    red 230deg 240deg,
+    black 240deg 250deg,
+    red 250deg 260deg,
+    black 260deg 270deg,
+    red 270deg 280deg,
+    black 280deg 290deg,
+    red 290deg 300deg,
+    black 300deg 310deg,
+    red 310deg 320deg,
+    black 320deg 330deg,
+    red 330deg 340deg,
+    black 340deg 350deg,
+    green 350deg 360deg
+  );
+  transition: transform 5s cubic-bezier(.12,.01,.16,.99);
+}
+.pin {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-bottom: 30px solid var(--accent); /* cor chamativa */
+  filter: drop-shadow(0 0 8px var(--accent)); /* brilho neon */
+  z-index: 100; /* sempre na frente da roleta */
+}
+.hub {
+  position: absolute; inset: 35%;
+  border-radius: 50%;
+  background: #111;
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+
+.controls h2 { margin: 0 0 10px; }
+.row { display: flex; gap: 12px; }
+.field { flex: 1; display: flex; flex-direction: column; }
+input, select {
+  padding: 10px; border-radius: 10px; border: none;
+  background: #0b0f29; color: var(--text);
+}
+
+.actions { display: flex; gap: 10px; margin-top: 12px; }
+button {
+  flex: 1; padding: 10px; border: none; border-radius: 10px;
+  font-weight: bold; cursor: pointer;
+  transition: transform 0.2s;
+}
+button:hover { transform: scale(1.05); }
+.btn-spin { background: linear-gradient(90deg, var(--primary), var(--accent)); color: #000; }
+.btn-reset { background: #333; color: #fff; }
+.sacar{
+
+    display: block;
+    margin: 20px auto; /* centraliza no meio */
+    padding: 15px 40px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(45deg, #55ff069c, #51ff00);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease-in-out;
+  
+}
+.status { display: flex; justify-content: space-around; margin-top: 10px; }
+.pill { text-align: center; }
+.value.win { color: var(--success); }
+.value.lose { color: var(--danger); }
+
+.history table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+tbody tr:hover { background: rgba(255,255,255,0.05); }
