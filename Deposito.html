@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Depósito</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #63b813, #000000a8);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .deposit-box {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+      text-align: center;
+      width: 320px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 24px;
+      color: #ffcc00;
+    }
+
+    #saldo {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      text-align: center;
+      outline: none;
+      color: #333;
+    }
+
+    button {
+      background: #ff9800;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    button:hover {
+      background: #ffb74d;
+      transform: scale(1.05);
+    }
+
+    .container-alinhamento {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centraliza os itens horizontalmente */
+    width: 100%; /* Garante que o contêiner ocupe a largura total */
+}
+
+input[type="number"] {
+    width: 90%; /* Ocupa 100% do contêiner */
+    padding: 12px;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    text-align: center;
+    outline: none;
+    color: #333;
+}
+  </style>
+</head>
+<body>
+  <div class="deposit-box">
+    <h1>💰 Depositar Dinheiro Real</h1>
+    <div id="saldo">💰 Saldo: R$ 0.00</div>
+    <input class="valor" id="valorDeposito" type="number" placeholder="Digite o valor">
+    <button onclick="depositar()">Enviar Depósito</button>
+    <button onclick="abrirPagina('index.html')">🎰 Ir para o Cassino</button>
+  </div>
+
+  <script>
+    // Verifica saldo inicial
+    let saldo = localStorage.getItem("saldo");
+    if (saldo === null) {
+      saldo = 0.00;
+      localStorage.setItem("saldo", saldo);
+    } else {
+      saldo = parseFloat(saldo);
+    }
+
+    // Atualiza saldo na tela
+    function atualizarSaldo() {
+      document.getElementById("saldo").textContent = 
+        `💰 Saldo: R$ ${parseFloat(localStorage.getItem("saldo")).toFixed(2)}`;
+    }
+
+    // Função de depósito
+    function depositar() {
+      let valor = parseFloat(document.getElementById("valorDeposito").value);
+      if (!isNaN(valor) && valor > 0) {
+        saldo += valor;
+        localStorage.setItem("saldo", saldo);
+        atualizarSaldo();
+        document.getElementById("valorDeposito").value = "";
+        alert("Depósito realizado com sucesso! ✅");
+      } else {
+        alert("Digite um valor válido para depósito!");
+      }
+    }
+
+    // Função para abrir outra página
+    function abrirPagina(pagina) {
+      window.location.href = pagina;
+    }
+
+    atualizarSaldo();
+  </script>
+</body>
+</html>

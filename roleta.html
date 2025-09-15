@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Roleta Neon – Cassino (Demo)</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --primary: #00e0ff;
+      --accent: #ff3b7f;
+      --success: #20e3b2;
+      --danger: #ff6b6b;
+      --text: #e8eeff;
+      --muted: #a5b1ff;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle, #111948, #0b1020);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .app {
+      width: min(1150px, 100%);
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 980px) {
+      .app { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    h1 { margin: 0; font-size: 26px; }
+    .badge {
+      font-size: 12px; padding: 4px 8px; border-radius: 8px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      color: #000; font-weight: bold;
+    }
+
+    .balance { font-size: 20px; font-weight: bold; }
+    .balance span { color: var(--success); }
+
+    .wheel-wrap { text-align: center; margin: 20px 0; position: relative; }
+    .wheel {
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      border: 8px solid #0b0f29;
+      position: relative;
+      overflow: hidden;
+      margin: auto;
+      box-shadow: 0 0 25px var(--primary);
+    }
+    .disk {
+      width: 100%; height: 100%; border-radius: 50%;
+      background: conic-gradient(
+        green 0deg 10deg,
+        red 10deg 20deg,
+        black 20deg 30deg,
+        red 30deg 40deg,
+        black 40deg 50deg,
+        red 50deg 60deg,
+        black 60deg 70deg,
+        red 70deg 80deg,
+        black 80deg 90deg,
+        red 90deg 100deg,
+        black 100deg 110deg,
+        red 110deg 120deg,
+        black 120deg 130deg,
+        red 130deg 140deg,
+        black 140deg 150deg,
+        red 150deg 160deg,
+        black 160deg 170deg,
+        red 170deg 180deg,
+        black 180deg 190deg,
+        red 190deg 200deg,
+        black 200deg 210deg,
+        red 210deg 220deg,
+        black 220deg 230deg,
+        red 230deg 240deg,
+        black 240deg 250deg,
+        red 250deg 260deg,
+        black 260deg 270deg,
+        red 270deg 280deg,
+        black 280deg 290deg,
+        red 290deg 300deg,
+        black 300deg 310deg,
+        red 310deg 320deg,
+        black 320deg 330deg,
+        red 330deg 340deg,
+        black 340deg 350deg,
+        green 350deg 360deg
+      );
+      transition: transform 5s cubic-bezier(.12,.01,.16,.99);
+    }
+    .pin {
+      
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 20px solid transparent;
+        border-right: 20px solid transparent;
+        border-top: 30px solid var(--accent); /* seta para baixo */
+        filter: drop-shadow(0 0 8px var(--accent));
+        z-index: 100;
+      
+    }
+    .hub {
+      position: absolute; inset: 35%;
+      border-radius: 50%;
+      background: #111;
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    .controls h2 { margin: 0 0 10px; }
+    .row { display: flex; gap: 12px; }
+    .field { flex: 1; display: flex; flex-direction: column; }
+    input, select {
+      padding: 10px; border-radius: 10px; border: none;
+      background: #0b0f29; color: var(--text);
+    }
+
+    .actions { display: flex; gap: 10px; margin-top: 12px; }
+    button {
+      flex: 1; padding: 10px; border: none; border-radius: 10px;
+      font-weight: bold; cursor: pointer;
+      transition: transform 0.2s;
+    }
+    button:hover { transform: scale(1.05); }
+    .btn-spin { background: linear-gradient(90deg, var(--primary), var(--accent)); color: #000; }
+    .back-btn {
+      display: block;
+      margin: 20px auto;
+      padding: 15px 40px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+      background: linear-gradient(45deg, #55ff069c, #51ff00);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease-in-out;
+    }
+    .status { display: flex; justify-content: space-around; margin-top: 10px; }
+    .pill { text-align: center; }
+    .value.win { color: var(--success); }
+    .value.lose { color: var(--danger); }
+
+    .history table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    tbody tr:hover { background: rgba(255,255,255,0.05); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="card" style="grid-row: span 2;">
+      <div class="topbar">
+        <h1>Roleta Neon <span class="badge">DEMO</span></h1>
+        <div class="balance">Saldo: <span id="saldo">R$ 1.000,00</span></div>
+      </div>
+
+      <div class="wheel-wrap">
+        <div class="pin"></div>
+        <div class="wheel">
+          <div id="disk" class="disk"></div>
+          <div class="hub"></div>
+        </div>
+      </div>
+
+      <div class="result card" id="resultado">
+        <div class="desc">Pronto para jogar! Escolha seu número (0–36) e/ou uma cor.</div>
+        <h3>&nbsp;</h3>
+      </div>
+
+      <div class="status card">
+        <div class="pill">
+          <div class="label">Ganhos</div>
+          <div class="value win" id="ganhos">R$ 0,00</div>
+        </div>
+        <div class="pill">
+          <div class="label">Perdas</div>
+          <div class="value lose" id="perdas">R$ 0,00</div>
+        </div>
+        <div class="pill">
+          <div class="label">Rodadas</div>
+          <div class="value" id="rodadas">0</div>
+        </div>
+      </div>
+
+      <p class="footer-note">Jogo demonstrativo – não usa dinheiro real. Resultado também é enviado ao console.</p>
+    </section>
+
+    <section class="controls card">
+      <h2>Aposta</h2>
+      <div class="row">
+        <div class="field">
+          <label for="numero">Número (0–36)</label>
+          <select id="numero">
+            <option value="">Nenhum</option>
+          </select>
+
+          <label for="cor">Escolha a cor</label>
+          <select id="cor">
+            <option value="">Nenhuma</option>
+            <option value="red">Vermelho</option>
+            <option value="black">Preto</option>
+            <option value="green">Verde</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="aposta">Valor (R$)</label>
+          <input id="aposta" type="number" min="1" step="1" value="0" />
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn-spin" id="btnGirar">Girar Roleta</button>
+      </div>
+    </section>
+
+    <section class="history card">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Número Escolhido</th>
+            <th>Cor Escolhida</th>
+            <th>Resultado</th>
+            <th>Aposta</th>
+            <th>Lucro/Prejuízo</th>
+            <th>Saldo</th>
+          </tr>
+        </thead>
+        <tbody id="histBody"></tbody>
+      </table>
+    </section>
+  </div>
+  
+  <div>
+    <button class="back-btn" onclick="voltar()">⬅ Voltar</button>
+  </div>
+
+  <script>
+    const ORDER = Array.from({ length: 37 }, (_, i) => i);
+    const COLORS = { 0: "green" };
+    for (let i = 1; i <= 36; i++) {
+      COLORS[i] = i % 2 === 0 ? "black" : "red";
+    }
+
+    // Carrega o saldo salvo no localStorage, ou define um valor padrão
+    let saldo = parseFloat(localStorage.getItem("saldo")) || 1000;
+    let ganhos = 0;
+    let perdas = 0;
+    let rodadas = 0;
+    let travado = false;
+
+    const elSaldo = document.getElementById("saldo");
+    const elGanhos = document.getElementById("ganhos");
+    const elPerdas = document.getElementById("perdas");
+    const elRodadas = document.getElementById("rodadas");
+    const elNumero = document.getElementById("numero");
+    const elCor = document.getElementById("cor");
+    const elAposta = document.getElementById("aposta");
+    const elBtn = document.getElementById("btnGirar");
+    const elHist = document.getElementById("histBody");
+    const elResultado = document.getElementById("resultado");
+    const disk = document.getElementById("disk");
+
+    // Preencher números
+    for (let i = 0; i <= 36; i++) {
+      const opt = document.createElement("option");
+      opt.value = i;
+      opt.textContent = i;
+      elNumero.appendChild(opt);
+    }
+
+    function fmt(v) {
+      return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    }
+    
+    function updateTop() {
+      elSaldo.textContent = fmt(saldo);
+      elGanhos.textContent = fmt(ganhos);
+      elPerdas.textContent = fmt(perdas);
+      elRodadas.textContent = rodadas;
+      // Salva o saldo no localStorage a cada atualização
+      localStorage.setItem("saldo", saldo.toFixed(2));
+    }
+
+    function addHist(escolha, resultado, aposta, delta) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${rodadas}</td>
+        <td>${escolha}</td>
+        <td>${resultado}</td>
+        <td>${fmt(aposta)}</td>
+        <td style="color:${delta>=0?"#20e3b2":"#ff6b6b"}">${delta>=0?"+":""}${fmt(delta)}</td>
+        <td>${fmt(saldo)}</td>
+      `;
+      elHist.prepend(tr);
+    }
+
+    function girarPara(numero) {
+      const volta = 6;
+      const angulo = (360 / ORDER.length) * numero;
+      const finalDeg = volta * 360 + angulo;
+      disk.style.transform = `rotate(${finalDeg}deg)`;
+    }
+
+    elBtn.addEventListener("click", () => {
+      if (travado) return;
+      const aposta = Number(elAposta.value);
+      const escolhaNumero = elNumero.value;
+      const escolhaCor = elCor.value;
+      
+      if (aposta <= 0 || aposta > saldo) {
+        alert("Aposta inválida ou saldo insuficiente!");
+        return;
+      }
+      if (escolhaNumero === "" && escolhaCor === "nenhum") {
+        alert("Escolha pelo menos um número ou uma cor para apostar!");
+        return;
+      }
+
+      travado = true;
+      saldo -= aposta;
+      updateTop();
+
+      const sorteado = ORDER[Math.floor(Math.random() * ORDER.length)];
+      const corSorteada = COLORS[sorteado];
+      girarPara(sorteado);
+
+      setTimeout(() => {
+        rodadas++;
+        let ganho = 0;
+
+        const acertouNumero = escolhaNumero !== "" && Number(escolhaNumero) === sorteado;
+        const acertouCor = escolhaCor !== "" && escolhaCor === corSorteada;
+
+        if (acertouNumero && acertouCor) {
+          if (corSorteada === "green") {
+            ganho = aposta * 504;
+          } else {
+            ganho = aposta * 72;
+          }
+          ganhos += ganho - aposta;
+        } else if (acertouNumero) {
+          ganho = aposta * 36;
+          ganhos += ganho - aposta;
+        } else if (acertouCor) {
+          if (corSorteada === "green") {
+            ganho = aposta * 14;
+          } else {
+            ganho = aposta * 2;
+          }
+          ganhos += ganho - aposta;
+        } else {
+          perdas += aposta;
+        }
+
+        saldo += ganho;
+        updateTop();
+
+        const delta = ganho - aposta;
+        elResultado.querySelector(".desc").textContent =
+          `Número sorteado: ${sorteado} (${corSorteada.toUpperCase()})`;
+        elResultado.querySelector("h3").textContent =
+          ganho > 0 ? `Você ganhou ${fmt(ganho)}` : `Você perdeu ${fmt(aposta)}`;
+        addHist(
+          `${escolhaNumero || "-"} / ${escolhaCor}`,
+          `${sorteado} / ${corSorteada}`,
+          aposta,
+          delta
+        );
+
+        console.log("Rodada", rodadas, "-> Sorteado:", sorteado, corSorteada, "| Escolha:", escolhaNumero, escolhaCor, "| Aposta:", aposta, "| Ganho:", ganho, "| Saldo:", saldo);
+
+        travado = false;
+      }, 5000);
+    });
+    
+    // Funções de retorno e atualização
+    function voltar() {
+      // Ajuste o caminho se o seu arquivo 'index.html' estiver em outra pasta
+      window.location.href = "index.html";
+    }
+
+    updateTop();
+  </script>
+</body>
+</html>

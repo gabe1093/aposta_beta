@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎰 Slot Machine</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #000428, #004e92);
+      color: #fff;
+      text-align: center;
+    }
+
+    h1 { margin-top: 20px; font-size: 28px; }
+
+    .back-btn {
+      background: #ff9800;
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: none;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: 0.3s;
+    }
+
+    .back-btn:hover { background: #ffb74d; transform: scale(1.05); }
+
+    .game-container {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 25px;
+      border-radius: 15px;
+      max-width: 420px;
+      margin: 30px auto;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+    }
+
+    #saldo {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #00e676;
+    }
+
+    .slots {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .slot {
+      width: 90px;
+      height: 90px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 50px;
+      box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.2);
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .spinning { animation: spin 0.5s ease-in-out infinite; }
+
+    @keyframes spin {
+      0% { transform: rotateX(0); }
+      50% { transform: rotateX(180deg); }
+      100% { transform: rotateX(360deg); }
+    }
+
+    input, button {
+      padding: 12px;
+      font-size: 16px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    input { width: 80%; text-align: center; }
+    button { cursor: pointer; color: white; font-weight: bold; }
+    #spin { background: #ff9800; }
+    #spin:hover { background: #ffb74d; transform: scale(1.05); }
+
+    #status { margin-top: 15px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>🎰 Slot Machine</h1>
+  <div class="game-container">
+    <div id="saldo">💰 Saldo: R$ 0.00</div>
+    <input type="number" id="betAmount" placeholder="Valor da aposta (R$)" />
+    <br />
+    <button id="spin">Girar</button>
+
+    <div class="slots">
+      <div class="slot" id="slot1">🍒</div>
+      <div class="slot" id="slot2">🍋</div>
+      <div class="slot" id="slot3">🍇</div>
+    </div>
+
+    <div id="status"></div>
+    <button class="back-btn" onclick="voltar()">⬅ Voltar</button>
+  </div>
+
+  <script>
+    const saldoEl = document.getElementById("saldo");
+    const betInput = document.getElementById("betAmount");
+    const spinBtn = document.getElementById("spin");
+    const slots = [
+      document.getElementById("slot1"),
+      document.getElementById("slot2"),
+      document.getElementById("slot3"),
+    ];
+    const statusEl = document.getElementById("status");
+
+    let saldo = parseFloat(localStorage.getItem("saldo")) || 50.00;
+    const symbols = ["💰", "💎", "7️⃣", "🍀", "🎲", "🎰", "🤡"];
+
+
+    function atualizarSaldo() {
+      localStorage.setItem("saldo", saldo);
+      saldoEl.textContent = `💰 Saldo: R$ ${saldo.toFixed(2)}`;
+    }
+
+    function sortearSimbolos() {
+      return symbols[Math.floor(Math.random() * symbols.length)];
+    }
+
+    function girarSlots() {
+      const betAmount = parseFloat(betInput.value);
+
+      if (isNaN(betAmount) || betAmount <= 0) {
+        alert("Digite um valor válido para apostar.");
+        return;
+      }
+
+      if (betAmount > saldo) {
+        alert("Saldo insuficiente!");
+        return;
+      }
+
+      saldo -= betAmount;
+      atualizarSaldo();
+
+      statusEl.textContent = "🎡 Girando...";
+      spinBtn.disabled = true;
+
+      slots.forEach(slot => slot.classList.add("spinning"));
+
+      setTimeout(() => {
+        const resultado = [sortearSimbolos(), sortearSimbolos(), sortearSimbolos()];
+        slots.forEach((slot, index) => {
+          slot.textContent = resultado[index];
+          slot.classList.remove("spinning");
+        });
+
+        if (resultado[0] === resultado[1] && resultado[1] === resultado[2]) {
+          const ganho = betAmount * 5;
+          saldo += ganho;
+          statusEl.textContent = `🎉 Parabéns! Você ganhou R$ ${ganho.toFixed(2)} 🤑`;
+        } else {
+          statusEl.textContent = `😢 Não foi dessa vez. Perdeu R$ ${betAmount.toFixed(2)}.`;
+        }
+
+        atualizarSaldo();
+        spinBtn.disabled = false;
+      }, 2000);
+    }
+
+    function voltar() {
+      window.location.href = "index.html";
+    }
+
+    spinBtn.addEventListener("click", girarSlots);
+    atualizarSaldo();
+  </script>
+</body>
+</html>
+
