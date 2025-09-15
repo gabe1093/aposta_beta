@@ -1,0 +1,150 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎮 Central de Jogos</title>
+  <style>
+    body {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #63b813, #000000a8);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  text-align: center;
+}
+
+h1 {
+  margin-top: 30px;
+  font-size: 32px;
+}
+
+#saldo {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 10px;
+  color: #00e676;
+}
+
+.games-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 40px;
+  max-width: 1200px; /* limita a largura total */
+  padding: 0 20px;   /* dá um pouco de espaço nas laterais */
+  box-sizing: border-box;
+}
+
+.game-card {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 25px;
+  border-radius: 15px;
+  width: 250px;
+  text-align: center;
+  box-shadow: 0 0 15px rgb(0, 255, 13);
+  transition: transform 0.3s, background 0.3s;
+}
+
+.game-card:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+}
+
+.game-card h2 {
+  margin-bottom: 10px;
+}
+
+.game-card button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  background: #ff9800;
+  transition: 0.3s;
+}
+
+.game-card button:hover {
+  background: #ffb74d;
+  transform: scale(1.05);
+}
+
+.game-Deposito-card{
+ display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 40px;
+  max-width: 1200px; /* limita a largura total */
+  padding: 0 20px;   /* dá um pouco de espaço nas laterais */
+  box-sizing: border-box;
+  
+}
+  </style>
+</head>
+<body>
+  <h1>🎮 Central de Jogos</h1>
+  <div id="saldo">💰 Saldo: R$ 50.00</div>
+
+  <div class="games-container">
+    <div class="game-card">
+      <h2>🚀 Jogo do Foguete</h2>
+      <button onclick="abrirJogo('foguete.html')">Jogar</button>
+    </div>
+    <div class="game-card">
+      <h2>🎰 Slot Machine</h2>
+      <button onclick="abrirJogo('slot.html')">Jogar</button>
+    </div>
+    <div class="game-card">
+      <h2>💣 Campo Minado</h2>
+      <button onclick="abrirJogo('campo-minado.html')">Jogar</button>
+    </div>
+     <div class="game-card">
+      <h2> 🎰  Roleta cor e numero</h2>
+      <button onclick="abrirJogo('roleta.html')">Jogar</button>
+    </div>
+    <div class="game-Deposito-card">
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <button onclick="abrirJogo('Deposito.html')">Fazer deposito</button>
+    </div>
+  </div>
+
+
+  <script>
+    // Verifica se já existe saldo salvo, senão define 50 reais
+    let saldo = localStorage.getItem("saldo");
+    if (saldo === null) {
+      saldo = 50.00;
+      localStorage.setItem("saldo", saldo);
+    } else {
+      saldo = parseFloat(saldo);
+    }
+
+    // Atualiza saldo na tela
+    function atualizarSaldo() {
+      document.getElementById("saldo").textContent = `💰 Saldo: R$ ${parseFloat(localStorage.getItem("saldo")).toFixed(2)}`;
+    }
+
+    function abrirJogo(pagina) {
+      window.location.href = pagina;
+    }
+
+    atualizarSaldo();
+  </script>
+</body>
+</html>
